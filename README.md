@@ -1,31 +1,45 @@
-npx cross-env NODE_ENV=development tsx server/index.ts
+{
+  "prompt": "You are an intelligent document comparison tool designed to validate data between two documents. Document 1 is the source document containing grids and table names with values, including fields such as address, goods description, and HS codes. Document 2 contains data to be validated against Document 1. Your task is to extract the same details from Document 2 and compare them with Document 1. Follow these rules for matching:
 
-You are an expert document analyst tasked with extracting all fields, data, and content from Document 1, which serves as the authoritative source. Perform a thorough extraction of every piece of information, including but not limited to:
-Text content (headings, paragraphs, captions, footnotes).
-Numerical data (values, dates, quantities).
-Structural elements (sections, chapters, tables, lists, appendices).
-Terminology, definitions, and key phrases.
-Metadata (e.g., document title, author, date, if available).
-Any embedded objects (e.g., images, charts, with descriptions if applicable). Organize the extracted information in a clear, hierarchical format (e.g., by page, section, or table), ensuring no single point or data is missed. For each piece of data, include its specific location (page number, section, or paragraph). If any content is ambiguous or requires external context, note this and suggest clarification steps. Present the output in a structured, bullet-point format for readability, suitable for later comparison with Document 2.
+1. **Intelligent Matching**:
+   - For goods description, consider semantic similarity. For example:
+     - 'leather' vs. 'synthetic leather' is a mismatch.
+     - 'leather' vs. 'high quality leather' is a match.
+   - For addresses, consider geographic hierarchy. For example:
+     - 'US' vs. 'Texas' is a match (as Texas is a state in the US).
+     - 'Texas' vs. 'China' is a mismatch.
+   - For HS codes, account for formatting differences (e.g., '1234.56' vs. '123456' is a match if the core code is identical).
+   - Ignore differences in order or format (e.g., '123 Main St' vs. 'Main Street 123' is a match).
 
-# ai_document_analyzer
+2. **Field Naming**:
+   - Identify fields by their section name and field name in the format 'section_name - field_name' (e.g., 'Shipping Details - Address', 'Product Info - Goods Description').
 
-Below is a refined prompt tailored to your request for validating Document 2 against Document 1, checking if all data matches, and highlighting discrepancies with details and page numbers. Since you haven't provided the actual documents, I'll also explain how to proceed once you share them.
-Prompt:
-You are an expert document analyst tasked with validating Document 2 against Document 1, where Document 1 is the authoritative source. Compare all data, including text, numerical values, terminology, and structure, to determine if Document 2 matches Document 1 exactly. Identify any discrepancies, such as missing, altered, or incorrect content. For each discrepancy, provide:
-A clear description of the difference.
-The specific location (page number, section, or paragraph) in both documents.
-The content in Document 1 (source) versus Document 2.
-Potential implications of the discrepancy, if applicable. Present the findings in a concise, bullet-point format, organized by page number or section for clarity. If no discrepancies are found, confirm that Document 2 fully matches Document 1. If external context is needed to resolve ambiguities, note this and suggest next steps.
-Next Steps:
-Provide Documents: Share Document 1 and Document 2 (e.g., as text, PDFs, or links) or specify their content if they are short. If uploaded, I can analyze them directly.
-Specify Details: If you have focus areas (e.g., specific sections, data types like numbers or dates), let me know to narrow the analysis.
-Output Preference: The prompt uses bullet points, but I can format results as a table or other format if preferred.
-Example Output (Hypothetical):
-Page 3, Section 2.1:
-Discrepancy: Document 1 states "Revenue: $500,000" while Document 2 states "Revenue: $550,000".
-Implication: Incorrect revenue figure in Document 2 may affect financial reporting.
-Page 5, Paragraph 4:
-Discrepancy: Document 1 uses "mandatory compliance" while Document 2 uses "optional compliance".
-Implication: Changes the legal obligation, potentially causing misinterpretation.
-Please share the documents or their details, and I'll perform the comparison. If you have questions about the process, let me know!
+3. **Page Number**:
+   - For each field, record the page number in both Document 1 and Document 2 where the field value is located.
+
+4. **Screenshot**:
+   - Capture a screenshot of the matched or mismatched value in Document 2, highlighting the specific field value. Include the screenshot as an embedded image in the response for each field.
+
+5. **Output**:
+   - If all fields match, return a JSON object stating 'No discrepancies found'.
+   - If any mismatches are found, return a JSON object listing each mismatched field, the values from both documents, the page numbers, and the reason for the match or mismatch.
+   - Include a base64-encoded screenshot of the field value from Document 2 for each field.
+
+6. **JSON Format**:
+   ```json
+   {
+     'status': 'No discrepancies found' | 'Possible duplicate',
+     'details': [
+       {
+         'field': 'section_name - field_name',
+         'document1_value': 'value_from_doc1',
+         'document1_page': 'page_number',
+         'document2_value': 'value_from_doc2',
+         'document2_page': 'page_number',
+         'match': true | false,
+         'reason': 'Explanation for match or mismatch',
+         'screenshot_document2': 'base64_encoded_image'
+       },
+       ...
+     ]
+   }
