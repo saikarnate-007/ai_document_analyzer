@@ -1,5 +1,13 @@
 npx cross-env NODE_ENV=development tsx server/index.ts
 
+You are an expert document analyst tasked with extracting all fields, data, and content from Document 1, which serves as the authoritative source. Perform a thorough extraction of every piece of information, including but not limited to:
+Text content (headings, paragraphs, captions, footnotes).
+Numerical data (values, dates, quantities).
+Structural elements (sections, chapters, tables, lists, appendices).
+Terminology, definitions, and key phrases.
+Metadata (e.g., document title, author, date, if available).
+Any embedded objects (e.g., images, charts, with descriptions if applicable). Organize the extracted information in a clear, hierarchical format (e.g., by page, section, or table), ensuring no single point or data is missed. For each piece of data, include its specific location (page number, section, or paragraph). If any content is ambiguous or requires external context, note this and suggest clarification steps. Present the output in a structured, bullet-point format for readability, suitable for later comparison with Document 2.
+
 # ai_document_analyzer
 
 Below is a refined prompt tailored to your request for validating Document 2 against Document 1, checking if all data matches, and highlighting discrepancies with details and page numbers. Since you haven't provided the actual documents, I'll also explain how to proceed once you share them.
